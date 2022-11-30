@@ -11,7 +11,12 @@ const store = createStore({
 	state(){
 		return{
 			weatherdata: null,
-			weatherdataweek: null
+			weatherdataforecast: null,
+			
+			api_key: 'ba90e5d8e3db6a10763401ce6a3bdc02',
+			url: 'https://api.openweathermap.org/data/2.5/',
+			
+			displaydata: '0',
 		}
 	},
 	
@@ -20,8 +25,12 @@ const store = createStore({
 			state.weatherdata = payload
 		},
 		
-		setweatherdataweek(state, payload){
-			state.weatherdataweek = payload
+		setweatherdataforecast(state, payload){
+			state.weatherdataforecast = payload
+		},
+		
+		setdisplaydata(state, payload){
+			state.displaydata = payload
 		}
 	}
 })
