@@ -5,7 +5,7 @@
 			<p class="location-date">{{ formatMainDate(currentDate) }}</p>
 		</td>
 		<td>
-			<button class="backButton" v-on:click="this.$store.state.displaydata = 0">Back</button>
+			<button class="backButton" v-on:click="this.$store.commit('setdisplaydata', 0)">Back</button>
 		</td>
 	</tr>
 	<tr class="weather-summary">

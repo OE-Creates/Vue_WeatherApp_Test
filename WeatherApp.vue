@@ -6,7 +6,7 @@
 				<button class="inputButton" v-on:click="fetchdata">Search</button><br>
 			</span>
 		</div>
-		<div class="app-main" v-if="this.$store.state.displaydata == 1">
+		<div class="app-main" v-if="this.getdisplaydata == 1">
 			<table class="outputField">
 				
 				<WeatherAppDataBase />
@@ -15,7 +15,7 @@
 				
 			</table>
 		</div>
-		<div class="app-main" v-if="this.$store.state.displaydata == 0">
+		<div class="app-main" v-if="this.getdisplaydata == 0">
 			<table class="outputField">
 				<tr v-for="searches in searchhistory" :key="searches.id">
 					<td>
@@ -64,19 +64,31 @@
 			
 			getweatherdataforecast(){
 				return this.$store.state.weatherdataforecast
+			},
+			
+			geturl(){
+				return this.$store.state.url
+			},
+			
+			getapikey(){
+				return this.$store.state.api_key
+			},
+			
+			getdisplaydata(){
+				return this.$store.state.displaydata
 			}
 		},
 		
 		methods: {
 			async fetchdata()
 			{
-				const res = await fetch(`${this.$store.state.url}weather?q=${this.weatherlocation}&units=metric&appid=${this.$store.state.api_key}`)
+				const res = await fetch(`${this.geturl}weather?q=${this.weatherlocation}&units=metric&appid=${this.getapikey}`)
 				
 				this.datahold = await res.json()
 				
 				this.$store.commit('setweatherdata', this.datahold)
 				
-				if (this.$store.state.weatherdata.cod != 404){
+				if (this.getweatherdata.cod != 404){
 				
 					let found = 0
 					let i = 0
@@ -90,25 +102,20 @@
 					}
 					
 					if (found == 0){
-						this.searchhistory.push({ id: id++, temp: this.$store.state.weatherdata.main.temp, search: this.weatherlocation})
+						this.searchhistory.push({ id: id++, temp: this.getweatherdata.main.temp, search: this.weatherlocation})
 					}
 					
-					this.fetchdataintervals()
+					const res = await fetch(`${this.geturl}forecast?q=${this.weatherlocation}&units=metric&appid=${this.getapikey}`)
+				
+					this.datahold = await res.json()
+					
+					this.$store.commit('setweatherdataforecast', this.datahold)
+					
+					this.datahold = null
+					
+					this.$store.commit('setdisplaydata', 1)
 				}
 			},
-			
-			async fetchdataintervals()
-			{
-				const res = await fetch(`${this.$store.state.url}forecast?q=${this.weatherlocation}&units=metric&appid=${this.$store.state.api_key}`)
-				
-				this.datahold = await res.json()
-				
-				this.$store.commit('setweatherdataforecast', this.datahold)
-				
-				this.datahold = null
-				
-				this.$store.state.displaydata = 1
-			}
 		},
 		
 		/*mounted() {
