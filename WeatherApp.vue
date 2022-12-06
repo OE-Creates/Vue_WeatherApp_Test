@@ -6,16 +6,19 @@
 				<button class="inputButton" v-on:click="fetchdata">Search</button><br>
 			</span>
 		</div>
+		
+		<WeatherAppLoading v-if="isLoading"/>
+		
 		<div class="app-main" v-if="this.getdisplaydata == 1">
 			<table class="outputField">
-				
+			
 				<WeatherAppDataBase />
 				
 				<WeatherAppForecastBase />
 				
 			</table>
 		</div>
-		<div class="app-main" v-if="this.getdisplaydata == 0">
+		<div class="app-main" v-if="this.getdisplaydata == 0 && isLoading == false">
 			<table class="outputField">
 				<tr v-for="searches in searchhistory" :key="searches.id">
 					<td>
@@ -38,6 +41,7 @@
 	import moment from 'moment'
 	import WeatherAppForecastBase from './WeatherAppForecastBase.vue'
 	import WeatherAppDataBase from './WeatherAppDataBase.vue'
+	import WeatherAppLoading from './WeatherAppLoading.vue'
 	
 	let id = 0;
 	
@@ -45,7 +49,7 @@
 	{
 		name: 'WeatherApp',
 		
-		components: {WeatherAppForecastBase, WeatherAppDataBase},
+		components: {WeatherAppForecastBase, WeatherAppDataBase, WeatherAppLoading},
 		
 		data()
 		{
@@ -53,7 +57,8 @@
 				datahold: null,
 				
 				weatherlocation: '',
-				searchhistory: []
+				searchhistory: [],
+				isLoading: false
 			}
 		},
 		
@@ -82,6 +87,8 @@
 		methods: {
 			async fetchdata()
 			{
+				this.isLoading = true
+				
 				const res = await fetch(`${this.geturl}weather?q=${this.weatherlocation}&units=metric&appid=${this.getapikey}`)
 				
 				this.datahold = await res.json()
@@ -113,7 +120,13 @@
 					
 					this.datahold = null
 					
+					this.isLoading = false
+					
 					this.$store.commit('setdisplaydata', 1)
+				}
+				else
+				{
+					this.isLoading = false
 				}
 			},
 		},
